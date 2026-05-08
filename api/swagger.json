@@ -1,0 +1,1455 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Attendance System API",
+    "version": "1.0.0",
+    "description": "Role-based API documentation. Admin endpoints are for the C# Administrator module. ClassTeacher endpoints are for attendance-related functions only."
+  },
+  "servers": [
+    {
+      "url": "http://localhost"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Token"
+      }
+    },
+    "schemas": {
+      "ApiMessageResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "userType": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "type": "integer"
+              },
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              },
+              "emailAddress": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Login for Administrator and ClassTeacher"
+    },
+    {
+      "name": "Debug",
+      "description": "Token debugging"
+    },
+    {
+      "name": "Admin - Dashboard",
+      "description": "Admin dashboard statistics"
+    },
+    {
+      "name": "Admin - Students",
+      "description": "Admin can add, view, edit, delete, search students"
+    },
+    {
+      "name": "Admin - Teachers",
+      "description": "Admin can add, view, edit, delete, search teachers and assignments"
+    },
+    {
+      "name": "Admin - Classes",
+      "description": "Admin can manage classes"
+    },
+    {
+      "name": "Admin - Class Arms",
+      "description": "Admin can manage class arms"
+    },
+    {
+      "name": "Admin - Session & Terms",
+      "description": "Admin can manage session and term"
+    },
+    {
+      "name": "ClassTeacher - Students",
+      "description": "ClassTeacher can view assigned students"
+    },
+    {
+      "name": "ClassTeacher - Attendance",
+      "description": "ClassTeacher can take attendance, view attendance, reports, and student attendance"
+    }
+  ],
+  "paths": {
+    "/Student-Attendance-System01-main/api/login.php": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login as Administrator or ClassTeacher",
+        "description": "Use Administrator for the C# admin module. Use ClassTeacher for attendance module.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "test@mail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "1234"
+                  },
+                  "userType": {
+                    "type": "string",
+                    "enum": [
+                      "Administrator",
+                      "ClassTeacher"
+                    ],
+                    "example": "Administrator"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password",
+                  "userType"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/debug_token.php": {
+      "get": {
+        "tags": [
+          "Debug"
+        ],
+        "summary": "Debug bearer token",
+        "description": "Checks if Swagger/C# is sending the Authorization bearer token correctly.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/dashboard_stats.php": {
+      "get": {
+        "tags": [
+          "Admin - Dashboard"
+        ],
+        "summary": "Get admin dashboard statistics",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/students.php": {
+      "get": {
+        "tags": [
+          "Admin - Students"
+        ],
+        "summary": "View/search students",
+        "description": "Admin only. Used by C# ManageStudentForm.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/add_student.php": {
+      "post": {
+        "tags": [
+          "Admin - Students"
+        ],
+        "summary": "Add student",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "otherName": {
+                    "type": "string"
+                  },
+                  "admissionNumber": {
+                    "type": "string"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "admissionNumber",
+                  "classId",
+                  "classArmId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/update_student.php": {
+      "post": {
+        "tags": [
+          "Admin - Students"
+        ],
+        "summary": "Edit/update student",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "otherName": {
+                    "type": "string"
+                  },
+                  "admissionNumber": {
+                    "type": "string"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "firstName",
+                  "lastName",
+                  "admissionNumber",
+                  "classId",
+                  "classArmId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/delete_student.php": {
+      "post": {
+        "tags": [
+          "Admin - Students"
+        ],
+        "summary": "Delete student",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/teachers.php": {
+      "get": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "View/search teachers",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/add_teacher.php": {
+      "post": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "Add teacher",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "emailAddress": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "phoneNo": {
+                    "type": "string"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "firstName",
+                  "lastName",
+                  "emailAddress",
+                  "password"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/update_teacher.php": {
+      "post": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "Edit/update teacher",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "emailAddress": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "phoneNo": {
+                    "type": "string"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/delete_teacher.php": {
+      "post": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "Delete teacher",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/classteachers.php": {
+      "get": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "View class teacher assignments",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/add_classteacher.php": {
+      "post": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "Assign class teacher",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "teacherId": {
+                    "type": "integer"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "teacherId",
+                  "classId",
+                  "classArmId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/update_classteacher.php": {
+      "post": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "Update class teacher assignment",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "teacherId": {
+                    "type": "integer"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/delete_classteacher.php": {
+      "post": {
+        "tags": [
+          "Admin - Teachers"
+        ],
+        "summary": "Delete class teacher assignment",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/classes.php": {
+      "get": {
+        "tags": [
+          "Admin - Classes"
+        ],
+        "summary": "View/search classes",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/add_class.php": {
+      "post": {
+        "tags": [
+          "Admin - Classes"
+        ],
+        "summary": "Add class",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "className": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "className"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/update_class.php": {
+      "post": {
+        "tags": [
+          "Admin - Classes"
+        ],
+        "summary": "Edit/update class",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "className": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "className"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/delete_class.php": {
+      "post": {
+        "tags": [
+          "Admin - Classes"
+        ],
+        "summary": "Delete class",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/classarms.php": {
+      "get": {
+        "tags": [
+          "Admin - Class Arms"
+        ],
+        "summary": "View/search class arms",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/add_classarm.php": {
+      "post": {
+        "tags": [
+          "Admin - Class Arms"
+        ],
+        "summary": "Add class arm",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmName": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "classId",
+                  "classArmName"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/update_classarm.php": {
+      "post": {
+        "tags": [
+          "Admin - Class Arms"
+        ],
+        "summary": "Edit/update class arm",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "classId": {
+                    "type": "integer"
+                  },
+                  "classArmName": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "classId",
+                  "classArmName"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/delete_classarm.php": {
+      "post": {
+        "tags": [
+          "Admin - Class Arms"
+        ],
+        "summary": "Delete class arm",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/terms.php": {
+      "get": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "Get terms",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/getTerms.php": {
+      "get": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "Get terms for C# combo box",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/getSessionTerm.php": {
+      "get": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "View session and term records",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/addSessionTerm.php": {
+      "post": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "Add session and term",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionName": {
+                    "type": "string",
+                    "example": "2025/2026"
+                  },
+                  "termId": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                },
+                "required": [
+                  "sessionName",
+                  "termId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/updateSessionTerm.php": {
+      "post": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "Edit/update session and term",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "sessionName": {
+                    "type": "string"
+                  },
+                  "termId": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "sessionName",
+                  "termId"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/activateSessionTerm.php": {
+      "post": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "Activate session and term",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/deleteSessionTerm.php": {
+      "post": {
+        "tags": [
+          "Admin - Session & Terms"
+        ],
+        "summary": "Delete session and term",
+        "description": "Admin only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/my_students.php": {
+      "get": {
+        "tags": [
+          "ClassTeacher - Students"
+        ],
+        "summary": "View assigned students",
+        "description": "ClassTeacher only. Admin should not use this endpoint.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/take_attendance.php": {
+      "post": {
+        "tags": [
+          "ClassTeacher - Attendance"
+        ],
+        "summary": "Take attendance",
+        "description": "ClassTeacher only. Admin cannot take attendance.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dateTaken": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "attendance": {
+                    "type": "string",
+                    "description": "JSON string of admissionNo/status pairs"
+                  }
+                },
+                "required": [
+                  "dateTaken",
+                  "attendance"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/view_attendance.php": {
+      "get": {
+        "tags": [
+          "ClassTeacher - Attendance"
+        ],
+        "summary": "View attendance",
+        "description": "ClassTeacher only. Admin cannot view teacher attendance pages.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "dateTaken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/update_attendance.php": {
+      "post": {
+        "tags": [
+          "ClassTeacher - Attendance"
+        ],
+        "summary": "Edit/update attendance",
+        "description": "ClassTeacher only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dateTaken": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "admissionNo": {
+                    "type": "string"
+                  },
+                  "status": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  }
+                },
+                "required": [
+                  "dateTaken",
+                  "admissionNo",
+                  "status"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Student-Attendance-System01-main/api/attendance_report.php": {
+      "get": {
+        "tags": [
+          "ClassTeacher - Attendance"
+        ],
+        "summary": "Attendance report",
+        "description": "ClassTeacher only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "fromDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ]
+      }
+    },
+    "/Student-Attendance-System01-main/api/student_attendance.php": {
+      "get": {
+        "tags": [
+          "ClassTeacher - Attendance"
+        ],
+        "summary": "View one student's attendance",
+        "description": "ClassTeacher only.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "parameters": [
+          {
+            "name": "admissionNo",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
